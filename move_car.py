@@ -3,60 +3,53 @@ movement = {'N': (0,1), 'E': (1,0), 'S': (0,-1), 'W':(-1,0)}
 commands = {'L': 'turn_left', 'R': 'turn_right', 'M': 'move'}
 
 
-# i think this is where you're trying to define the grid,
-# but you don't specify what kind of input you're asking for
-# or what limits on that input would be
-GRID_MAX_X, GRID_MAX_Y = map(int, raw_input().split())
 
-# don't define these out here - put within the class
-first_vehicle_x = None
-first_vehicle_y = None
+gridMaxX, GridMaxY = raw_input("Enter X and Y separated by a space:").split()
 
-# dir is a built-in function; use a unique variable name (e.g., face)
-# not clear why you have 'face' but then re-name it; pick one
+
 class Vehicle():
+    cardDir = ['N','E','S','W'] 
+    movement = {'N': (0,1), 'E': (1,0), 'S': (0,-1), 'W':(-1,0)}
     def __init__(self, x, y, face):
         self.x = x
         self.y = y
-        self.dir = face
-# verify input  - self.dir can only be 'N', 'S','E', or 'W'
+        self.face = cardDir.index(face)
+
     def turn_left(self):
-        self.dir = directions[(directions.index(self.dir)-1)%len(directions)]
+        self.face = cardDir[(cardDir.index(self.face)-1)%len(cardDir)]
 
     def turn_right(self):
-        self.dir = directions[(directions.index(self.dir)+1)%len(directions)]
+        self.dir = cardDir[(cardDir.index(self.dir)+1)%len(cardDir)]
 
-# test - i don't think this will move the vehicle one step in the given direction;
-# instead looks like it'll just override the starting location with any
-# possible location
-# e.g., if starting at (0,0) on the grid and want to move north,
-# car.move(2,1) will move you to position (2,3), which is NE
-    def move(self):
-        new_x = self.x + movement[self.dir][0]
-        new_y = self.y + movement[self.dir][1]
-
-# how does the function know what first_vehicle_x/y is? 
-# what happens if these conditions aren't met?
-# what if there are more than 2 cars, or you're moving the first vehicle
-# because first_vehicle_x defined as global variable, will always be none
-
-        if new_x != first_vehicle_x or new_y != first_vehicle_y:
-            if new_x in xrange(GRID_MAX_X+1):
-                self.x = new_x
-            if new_y in xrange(GRID_MAX_Y+1):
-                self.y = new_y
+    def move_one(self):
+        if self.face == 'N': 
+            new_y = self.y + 1
+        elif self.face =='S':
+            new_y = self.y - 1
+        elif self.face == 'E':
+            new_x = self.x + 1
+        else: 
+            new_x = self.x - 1
+    
+    def move_anywhere(self,direction,steps):
+        allMove = {'N': (0,1), 'E': (1,0), 'S': (0,-1), 'W':(-1,0),
+                    'NE':(1,1), 'SE':(1,-1), 'NW': (-1,1), 'SW': (-1,-1)
+        }
+        new_x = self.x + allMove[direction][0] + steps
+        new_y = self.y + allMove[direction][1] + steps
+        
 
 
 # what input are you asking for? how does the user know what to provide?
 # looks like they need to be instructed to give at least 3 inputs (x,y,direction)
-vehicle_one_pos = raw_input().split()
+vehicle_one_pos = raw_input("Give starting position (x y direction):").split()
 
 # same; user doesn't know what you want. need to specify L, R, M
-vehicle_one_commands = raw_input()
+vehicle_one_commands = raw_input("Give command (L, R, or M):")
 
 vehicle_one = Vehicle(int(vehicle_one_pos[0]), int(vehicle_one_pos[1]), vehicle_one_pos[2])
 
-# write as a function instead of using eval
+
 for command in vehicle_one_commands:
     eval("vehicle_one.{0}()".format(commands[command]))
 
